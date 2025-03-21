@@ -1,13 +1,13 @@
-const { CHAT_ID, POLL_CRON } = require('./config');
-const schedule = require('node-schedule');
-const { getPollOptions, getTomorrowWeekday, displayPollResults } = require('./helpers');
-const { Poll } = require('whatsapp-web.js');
-const client = require('./whatsappClient');
-const _ = require('lodash');
-const chalk = require('chalk');
+import { CHAT_ID, POLL_CRON } from './config.js';
+import schedule from 'node-schedule';
+import { displayPollResults, getPollOptions, getTomorrowWeekday } from './helpers.js';
+import client from './whatsappClient.js';
+import _ from 'lodash';
+import chalk from 'chalk';
+import { Poll } from './whatsappWrapper.js';
 
 
-let latestPollId = null;
+let latestPollId: string | null = null;
 const voteHistory = new Map();
 
 const schedulePoll = async () => {
@@ -24,7 +24,7 @@ const schedulePoll = async () => {
 
     const poll = new Poll(getTomorrowWeekday(), pollOptions, {
       allowMultipleAnswers: true,
-      messageSecret: null,
+      messageSecret: undefined
     });
 
     const message = await client.sendMessage(volleyballGroup.id._serialized, poll);
@@ -64,4 +64,4 @@ client.on('vote_update', async (vote) => {
   displayPollResults(voteHistory);
 });
 
-module.exports = { latestPollId, schedulePoll };
+export { latestPollId, schedulePoll };

@@ -1,5 +1,6 @@
-const _ = require('lodash');
-const chalk = require('chalk');
+import _ from 'lodash';
+import chalk from 'chalk';
+import { HopitudeTimetable, VoteHistory } from './types.js';
 
 
 const getTomorrowDate = () => {
@@ -15,20 +16,20 @@ const getTomorrowWeekday = () =>
 const getPollOptions = async () => {
   const tomorrow = getTomorrowDate().getTime();
   let response = await fetch(`https://admin.hopitude.com/api/v1/calendar/workout-events/club/66/?from=${tomorrow}&to=${tomorrow}`);
-  response = await response.json();
+  let responseJson: HopitudeTimetable = await response.json();
 
-  const availableTimes = response.events
+  const availableTimes = responseJson.events
     .filter(x => x.title.toLowerCase().includes('ball games'))
     .map(x => x.start_time);
 
   return _.intersection(availableTimes, ['10:00', '12:00', '14:00']);  // No one goes at 08:00
 };
 
-const getPollResults = (voteHistory) => {
-  const results = {
+const getPollResults = (voteHistory: VoteHistory) => {
+  const results: { [key: string]: string[] } = {
     '10:00': [],
     '12:00': [],
-    '14:00': [],
+    '14:00': []
   };
 
   for (const { name, selection } of voteHistory.values()) {
@@ -41,7 +42,7 @@ const getPollResults = (voteHistory) => {
 };
 
 /** Formats and prints poll results */
-const displayPollResults = (voteHistory) => {
+const displayPollResults = (voteHistory: VoteHistory) => {
   const pollResults = getPollResults(voteHistory);
   console.log(chalk.blue('Latest poll results:'));
   for (const [time, voters] of Object.entries(pollResults)) {
@@ -51,4 +52,4 @@ const displayPollResults = (voteHistory) => {
 };
 
 
-module.exports = { getTomorrowWeekday, getPollOptions, displayPollResults };
+export { getTomorrowWeekday, getPollOptions, displayPollResults };

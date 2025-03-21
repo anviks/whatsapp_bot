@@ -1,6 +1,6 @@
-const { CHROMIUM_PATH } = require('./config');
-const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
+import { CHROMIUM_PATH } from './config.js';
+import qrcode from 'qrcode-terminal';
+import { Client, LocalAuth } from './whatsappWrapper.js';
 
 
 const client = new Client({
@@ -10,8 +10,8 @@ const client = new Client({
     : undefined,
 });
 
-client.on('qr', qr => {
+client.on('qr', (qr: any) => {
   qrcode.generate(qr, { small: true });
 });
 
-module.exports = client;
+export default client;

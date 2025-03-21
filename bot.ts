@@ -1,5 +1,5 @@
-const { schedulePoll } = require('./pollService');
-const client = require('./whatsappClient');
+import { schedulePoll } from './pollService.js';
+import client from './whatsappClient.js';
 
 
 client.on('ready', async () => {
