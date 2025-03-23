@@ -50,7 +50,7 @@ client.on('vote_update', async (vote) => {
   const removedVotes = _.difference(previousVote.selection, newSelection);
 
   // Log vote update timestamp
-  console.log(chalk.grey(`[${new Date().toLocaleTimeString()}]`));
+  console.log(chalk.grey(`[${new Date().toLocaleTimeString('et-EE')}]`));
 
   if (addedVotes.length) {
     console.log(chalk.bgGreen(`+ ${previousVote.name} voted for ${vote.parentMessage.body} ${addedVotes}`));
