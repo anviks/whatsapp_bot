@@ -40,8 +40,9 @@ client.on('vote_update', async (vote) => {
 
   let previousVote = voteHistory.get(vote.voter);
   if (!previousVote) {
-    const name = await client.getContactById(vote.voter);
-    previousVote = { name: name.name, selection: [] };
+    const contact = await client.getContactById(vote.voter);
+    const contactName = contact.name || contact.pushname;
+    previousVote = { name: contactName, selection: [] };
   }
 
   const newSelection = vote.selectedOptions.map((x) => x.name);
