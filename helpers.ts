@@ -3,6 +3,8 @@ import chalk from 'chalk';
 import { HopitudeTimetable, VoteHistory } from './types.js';
 
 
+const getCurrentTime = () => chalk.grey(`[${new Date().toLocaleTimeString('et-EE')}]`);
+
 const getTomorrowDate = () => {
   const nextDay = new Date();
   nextDay.setDate(nextDay.getDate() + 1);
@@ -44,7 +46,7 @@ const getPollResults = (voteHistory: VoteHistory) => {
 /** Formats and prints poll results */
 const displayPollResults = (voteHistory: VoteHistory) => {
   const pollResults = getPollResults(voteHistory);
-  console.log(chalk.blue('Latest poll results:'));
+  console.log(chalk.blueBright('Latest poll results:'));
   for (const [time, voters] of Object.entries(pollResults)) {
     console.log(`${chalk.yellow('*')} ${time}: ${voters.join(', ')}`);
   }
@@ -52,4 +54,4 @@ const displayPollResults = (voteHistory: VoteHistory) => {
 };
 
 
-export { getTomorrowWeekday, getPollOptions, displayPollResults };
+export { getTomorrowWeekday, getPollOptions, displayPollResults, getCurrentTime };

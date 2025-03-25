@@ -1,6 +1,6 @@
 import { CHAT_ID, POLL_CRON } from './config.js';
 import schedule from 'node-schedule';
-import { displayPollResults, getPollOptions, getTomorrowWeekday } from './helpers.js';
+import { displayPollResults, getCurrentTime, getPollOptions, getTomorrowWeekday } from './helpers.js';
 import client from './whatsappClient.js';
 import _ from 'lodash';
 import chalk from 'chalk';
@@ -28,6 +28,9 @@ const schedulePoll = async () => {
     });
 
     const message = await client.sendMessage(volleyballGroup.id._serialized, poll);
+    console.log(getCurrentTime());
+    console.log(chalk.bold.green(`Sent a poll for ${poll.pollName}\n`));
+
     latestPollId = message.id.id;
     voteHistory.clear();
 
@@ -49,8 +52,7 @@ client.on('vote_update', async (vote) => {
   const addedVotes = _.difference(newSelection, previousVote.selection);
   const removedVotes = _.difference(previousVote.selection, newSelection);
 
-  // Log vote update timestamp
-  console.log(chalk.grey(`[${new Date().toLocaleTimeString('et-EE')}]`));
+  console.log(getCurrentTime());
 
   if (addedVotes.length) {
     console.log(chalk.bgGreen(`+ ${previousVote.name} voted for ${vote.parentMessage.body} ${addedVotes}`));
