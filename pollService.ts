@@ -1,16 +1,56 @@
 import { CHAT_ID, POLL_CRON } from './config.js';
 import schedule from 'node-schedule';
-import { displayPollResults, getCurrentTime, getPollOptions, getTomorrowWeekday } from './helpers.js';
+import { getCurrentTime, getTomorrowDate, getTomorrowWeekday } from './helpers.js';
 import client from './whatsappClient.js';
 import _ from 'lodash';
 import chalk from 'chalk';
 import { Poll } from './whatsappWrapper.js';
 import type { PollVote } from 'whatsapp-web.js';
-import type { VoteHistory } from './types.js';
+import type { HopitudeTimetable, VoteHistory } from './types.js';
 
 
 let latestPollId: string | null = null;
 const voteHistory: VoteHistory = new Map();
+
+/** Fetch available time slots for tomorrow */
+const getPollOptions = async () => {
+  const tomorrow = getTomorrowDate().getTime();
+  let response = await fetch(`https://admin.hopitude.com/api/v1/calendar/workout-events/club/66/?from=${tomorrow}&to=${tomorrow}`);
+  let responseJson: HopitudeTimetable = await response.json();
+
+  const availableTimes = responseJson.events
+    .filter(x => x.title.toLowerCase().includes('ball games'))
+    .map(x => x.start_time);
+
+  return _.intersection(availableTimes, ['10:00', '12:00', '14:00']);  // No one goes at 08:00
+};
+
+/** Converts vote history to a format suitable for displaying poll results */
+const getPollResults = (voteHistory: VoteHistory) => {
+  const results: { [key: string]: string[] } = {
+    '10:00': [],
+    '12:00': [],
+    '14:00': [],
+  };
+
+  for (const { name, selection } of voteHistory.values()) {
+    for (const option of selection) {
+      results[option].push(name);
+    }
+  }
+
+  return results;
+};
+
+/** Formats and prints poll results */
+const displayPollResults = (voteHistory: VoteHistory) => {
+  const pollResults = getPollResults(voteHistory);
+  console.log(chalk.blueBright('Latest poll results:'));
+  for (const [time, voters] of Object.entries(pollResults)) {
+    console.log(`${chalk.yellow('*')} ${time}: ${voters.join(', ')}`);
+  }
+  console.log();
+};
 
 const schedulePoll = async () => {
   const contacts = await client.getContacts();
