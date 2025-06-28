@@ -9,5 +9,6 @@
     "allowJs": true,
     "moduleResolution": "NodeNext",
     "outDir": "./dist",
+    "noImplicitAny": true,
   }
 }

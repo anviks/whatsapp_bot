@@ -31,7 +31,7 @@ const getPollResults = (voteHistory: VoteHistory) => {
   const results: { [key: string]: string[] } = {
     '10:00': [],
     '12:00': [],
-    '14:00': []
+    '14:00': [],
   };
 
   for (const { name, selection } of voteHistory.values()) {

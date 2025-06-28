@@ -5,10 +5,12 @@ import client from './whatsappClient.js';
 import _ from 'lodash';
 import chalk from 'chalk';
 import { Poll } from './whatsappWrapper.js';
+import type { PollVote } from 'whatsapp-web.js';
+import type { VoteHistory } from './types.js';
 
 
 let latestPollId: string | null = null;
-const voteHistory = new Map();
+const voteHistory: VoteHistory = new Map();
 
 const schedulePoll = async () => {
   const contacts = await client.getContacts();
@@ -24,7 +26,7 @@ const schedulePoll = async () => {
 
     const poll = new Poll(getTomorrowWeekday(), pollOptions, {
       allowMultipleAnswers: true,
-      messageSecret: undefined
+      messageSecret: undefined,  // Assigned type requires this to be specified
     });
 
     const message = await client.sendMessage(volleyballGroup.id._serialized, poll);
@@ -34,11 +36,13 @@ const schedulePoll = async () => {
     latestPollId = message.id.id;
     voteHistory.clear();
 
+    // Required to receive vote updates
     await client.interface.openChatWindow(volleyballGroup.id._serialized);
   });
 };
 
-client.on('vote_update', async (vote) => {
+client.on('vote_update', async (vote: PollVote) => {
+  // Ensure the vote is from the latest poll
   if (vote.parentMessage.id.id !== latestPollId) return;
 
   let previousVote = voteHistory.get(vote.voter);

@@ -52,4 +52,9 @@ interface HopitudeEventStyle {
   borderLeft: string;
 }
 
-export type VoteHistory = Map<string, { name: string, selection: string[] }>
+export interface Vote {
+  name: string;
+  selection: string[];
+}
+
+export type VoteHistory = Map<string, Vote>;
